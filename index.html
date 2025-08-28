@@ -53,29 +53,129 @@
          <div class="main-form">
             <h3>Get in Touch Today</h3>
 
-            <form action="">
+            <form action="" id="contactForm">
                <div class="form-group">
                   <label for="">Full Name</label>
-                  <input type="text" placeholder="Enter your Full Name" required>
+                  <input type="text" id="fullName" name="fullName" placeholder="Enter your Full Name" required>
                </div>
                <div class="form-group">
                   <label for="">Email</label>
-                  <input type="text" placeholder="Enter your Email" required>
+                  <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                </div>
                <div class="form-group">
                   <label for="">Phone</label>
-                  <input type="text" placeholder="Enter your Phone (Optional)">
+                  <input type="tel" id="phone" name="phone" placeholder="Enter your Phone (Optional)">
                </div>
                <div class="form-group">
                   <label for="">Message</label>
-                  <textarea name="" id="" rows="3" placeholder="Tell us how we can help you..."></textarea>
+                  <textarea name="message" id="message" rows="3" placeholder="Tell us how we can help you..."></textarea>
                </div>
 
-               <button>Send Message</button>
+               <button type="submit" onclick="sendEmail(event)">Send Message</button>
                <p>© Ride With Alliance 2025</p>
             </form>
          </div>
       </div>
    </div>
+
+<script>
+function sendEmail(event) {
+    // Prevent default form submission
+    event.preventDefault();
+    
+    // Get form data
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    // Validate required fields
+    if (!fullName || !email) {
+        alert('Please fill in all required fields (Full Name and Email).');
+        return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    // Your email address where you want to receive messages
+    const recipientEmail = 'contact@ridewithalliance.com'; // Replace with your actual email
+    
+    // Create email subject
+    const subject = `New Contact Form Submission from ${fullName}`;
+    
+    // Create email body
+    let emailBody = `Hello,\n\n`;
+    emailBody += `You have received a new contact form submission from your website:\n\n`;
+    emailBody += `Contact Details:\n`;
+    emailBody += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    emailBody += `Full Name: ${fullName}\n`;
+    emailBody += `Email: ${email}\n`;
+    
+    if (phone) {
+        emailBody += `Phone: ${phone}\n`;
+    }
+    
+    emailBody += `\nCustomer Message:\n`;
+    emailBody += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    emailBody += `${message || 'No additional message provided.'}\n\n`;
+    emailBody += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    emailBody += `This message was sent from the Ride With Alliance contact form.\n`;
+    emailBody += `Please respond directly to the customer's email: ${email}\n\n`;
+    emailBody += `Best regards,\n`;
+    emailBody += `Ride With Alliance Contact System`;
+    
+    // URL encode the subject and body
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(emailBody);
+    
+    // Create mailto link
+    const mailtoLink = `mailto:${recipientEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+    
+    try {
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        setTimeout(() => {
+            alert('Email client opened successfully!\n\nPlease send the email to complete your message submission.\n\nThank you for contacting Ride With Alliance!');
+            
+            // Clear the form after showing success message
+            document.getElementById('contactForm').reset();
+        }, 500);
+        
+    } catch (error) {
+        alert('Unable to open email client. Please copy the following email address and contact us manually:\n\n' + recipientEmail);
+    }
+}
+
+// Add some visual feedback when form is being processed
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Add loading state
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Opening Email...';
+        submitBtn.disabled = true;
+        
+        // Call the sendEmail function
+        sendEmail(e);
+        
+        // Reset button after a delay
+        setTimeout(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }, 2000);
+    });
+});
+</script>
 </body>
 </html>
